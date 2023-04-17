@@ -11,7 +11,8 @@ AGH WIET course introduces Distributed Systems.
 
 ## List
 
-1. [RESTful](lab1)
+1. [RESTful](https://github.com/lawos98/Distributed_systems/tree/RESTful)
+2. [Sockets](https://github.com/lawos98/Distributed_systems/tree/Sockets)
 
 ## Authors
 
