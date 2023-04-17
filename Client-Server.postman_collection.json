@@ -1,0 +1,268 @@
+{
+	"info": {
+		"_postman_id": "cec0be65-740d-4b75-811c-ee196d545218",
+		"name": "Client-Server",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "18994932"
+	},
+	"item": [
+		{
+			"name": "Get Temperature - Krakow",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJodHRwOi8vMC4wLjAuMDo4MDgwL2hlbGxvIiwiaXNzIjoiaHR0cDovLzAuMC4wLjA6ODA4MC8iLCJhZG1pbiI6ImFkbWluIiwiZXhwIjoxNzM5MzY2MzczfQ.GPhA6XbcSWGG81J2UeSSIXWKVEl6iFgC7beADwh0EjM",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8080/weather?city=Krakow&fromDate=2023-03-21&toDate=2023-03-23",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"weather"
+					],
+					"query": [
+						{
+							"key": "city",
+							"value": "Krakow"
+						},
+						{
+							"key": "fromDate",
+							"value": "2023-03-21"
+						},
+						{
+							"key": "toDate",
+							"value": "2023-03-23"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Temperature - Invalid City Name",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8080/weather?city=XXXXXXXXXXXXXX&fromDate=2023-03-21&toDate=2023-03-23",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"weather"
+					],
+					"query": [
+						{
+							"key": "city",
+							"value": "XXXXXXXXXXXXXX"
+						},
+						{
+							"key": "fromDate",
+							"value": "2023-03-21"
+						},
+						{
+							"key": "toDate",
+							"value": "2023-03-23"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Temperature - missing City Name",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8080/weather?city=&fromDate=2023-03-21&toDate=2023-03-23",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"weather"
+					],
+					"query": [
+						{
+							"key": "city",
+							"value": ""
+						},
+						{
+							"key": "fromDate",
+							"value": "2023-03-21"
+						},
+						{
+							"key": "toDate",
+							"value": "2023-03-23"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Temperature - Incorect From || To Date",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8080/weather?city=&fromDate=&toDate",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"weather"
+					],
+					"query": [
+						{
+							"key": "city",
+							"value": ""
+						},
+						{
+							"key": "fromDate",
+							"value": ""
+						},
+						{
+							"key": "toDate",
+							"value": null
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Temperature - without auth",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8080/weather",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"weather"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Correct Login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"username\": \"admin\",\n  \"password\": \"admin\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{LOCAL}}/login",
+					"host": [
+						"{{LOCAL}}"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Not Correct Login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"username\": \"username\",\n  \"password\": \"password\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{LOCAL}}/login",
+					"host": [
+						"{{LOCAL}}"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

@@ -1,0 +1,218 @@
+{
+	"info": {
+		"_postman_id": "8a8ab2c1-da98-4eb4-bd3e-b2f59dbb7b78",
+		"name": "Server-Servis",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "18994932"
+	},
+	"item": [
+		{
+			"name": "Get Geo",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{GEO_URL}}?q=Krakow&limit=1&appid={{API_KEY}}",
+					"host": [
+						"{{GEO_URL}}"
+					],
+					"query": [
+						{
+							"key": "q",
+							"value": "Krakow"
+						},
+						{
+							"key": "limit",
+							"value": "1"
+						},
+						{
+							"key": "appid",
+							"value": "{{API_KEY}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Geo Not Correct City",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{GEO_URL}}?q=wwwwwwwwwwwwwwwwwwwwwwwww&limit=1&appid={{API_KEY}}",
+					"host": [
+						"{{GEO_URL}}"
+					],
+					"query": [
+						{
+							"key": "q",
+							"value": "wwwwwwwwwwwwwwwwwwwwwwwww"
+						},
+						{
+							"key": "limit",
+							"value": "1"
+						},
+						{
+							"key": "appid",
+							"value": "{{API_KEY}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Geo Empty",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{GEO_URL}}?q=&limit=1&appid={{API_KEY}}",
+					"host": [
+						"{{GEO_URL}}"
+					],
+					"query": [
+						{
+							"key": "q",
+							"value": ""
+						},
+						{
+							"key": "limit",
+							"value": "1"
+						},
+						{
+							"key": "appid",
+							"value": "{{API_KEY}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Geo Invalid API Key",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{GEO_URL}}?q=Krakow&limit=1&appid=1",
+					"host": [
+						"{{GEO_URL}}"
+					],
+					"query": [
+						{
+							"key": "q",
+							"value": "Krakow"
+						},
+						{
+							"key": "limit",
+							"value": "1"
+						},
+						{
+							"key": "appid",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Weather",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{WEATHER_URL}}?lat=1&lon=1&appid={{API_KEY}}&units=metric",
+					"host": [
+						"{{WEATHER_URL}}"
+					],
+					"query": [
+						{
+							"key": "lat",
+							"value": "1"
+						},
+						{
+							"key": "lon",
+							"value": "1"
+						},
+						{
+							"key": "appid",
+							"value": "{{API_KEY}}"
+						},
+						{
+							"key": "units",
+							"value": "metric"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Weather Invalid API Key",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{WEATHER_URL}}?lat=1&lon=1&appid=1&units=metric",
+					"host": [
+						"{{WEATHER_URL}}"
+					],
+					"query": [
+						{
+							"key": "lat",
+							"value": "1"
+						},
+						{
+							"key": "lon",
+							"value": "1"
+						},
+						{
+							"key": "appid",
+							"value": "1"
+						},
+						{
+							"key": "units",
+							"value": "metric"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Weather Not Correct longitude or latitude",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{WEATHER_URL}}?lat=a&lon=a&appid={{API_KEY}}&units=metric",
+					"host": [
+						"{{WEATHER_URL}}"
+					],
+					"query": [
+						{
+							"key": "lat",
+							"value": "a"
+						},
+						{
+							"key": "lon",
+							"value": "a"
+						},
+						{
+							"key": "appid",
+							"value": "{{API_KEY}}"
+						},
+						{
+							"key": "units",
+							"value": "metric"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
