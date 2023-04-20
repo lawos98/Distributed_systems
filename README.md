@@ -7,4 +7,4 @@ This is a simple project that allows you to send and receive messages using Sock
 - Supports TCP, UDP, and multicast protocols
 - Built with Kotlin and Java Sockets
 
-![/assets/example.png](/assets/example.png)
+![example_foto](/assets/example.PNG)
