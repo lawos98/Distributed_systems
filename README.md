@@ -6,5 +6,6 @@ This is a simple project that allows you to send and receive messages using Sock
 - Send and receive messages in real-time
 - Supports TCP, UDP, and multicast protocols
 - Built with Kotlin and Java Sockets
+- Utilizes Kotlin Coroutines for efficient concurrency
 
 ![example_foto](/assets/example.PNG)
