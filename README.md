@@ -7,6 +7,8 @@ AGH WIET course introduces Distributed Systems.
 <h3 align="left">Languages and Tools:</h3>
 <p align="center">
 <img height="50" src="https://raw.githubusercontent.com/github/explore/4479d2a2c854198cb00160f8593519c14dc3b905/topics/kotlin/kotlin.png" />
+<img height="50" src="https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/python/python.png" />
+<img height="50" src="https://www.docker.com/wp-content/uploads/2022/03/vertical-logo-monochromatic.png.webp" /> 
 </p>
 
 ## List
