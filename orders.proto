@@ -1,0 +1,50 @@
+syntax = "proto3";
+
+message User {
+  string firstname = 1;
+  string lastname = 2;
+  uint32 age = 3;
+}
+
+message Address {
+  uint32 house_number = 1;
+  string street = 2;
+  string city = 3;
+  string country = 4;
+}
+
+message Order {
+  uint32 id = 1;
+  repeated string items = 2;
+  bool is_completed = 3;
+  User user = 4;
+  Address shipping_address = 5;
+  map<string, int32> item_quantities = 6;
+}
+
+message GetOrderRequest {
+  uint32 id = 1;
+}
+
+message CreateOrderRequest {
+  uint32 id = 1;
+  repeated string items = 2;
+  User user = 3;
+  Address shipping_address = 4;
+  map<string, int32> item_quantities = 5;
+}
+
+message UpdateOrderRequest {
+  uint32 id = 1;
+  repeated string items = 2;
+  bool is_completed = 3;
+  User user = 4;
+  Address shipping_address = 5;
+  map<string, int32> item_quantities = 6;
+}
+
+service OrderService {
+  rpc GetOrder(GetOrderRequest) returns (Order) {}
+  rpc CreateOrder(CreateOrderRequest) returns (Order) {}
+  rpc UpdateOrder(UpdateOrderRequest) returns (Order) {}
+}
