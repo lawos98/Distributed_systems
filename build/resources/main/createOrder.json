@@ -1,0 +1,20 @@
+{
+  "id": "420",
+  "items": ["apple", "banana", "orange"],
+  "user": {
+    "firstname": "Jan",
+    "lastname": "Kowalski",
+    "age": 46
+  },
+  "shipping_address": {
+    "houseNumber": 14,
+    "street": "Blich",
+    "city": "Szymbark",
+    "country": "Poland"
+  },
+  "item_quantities": {
+    "apple": 1,
+    "banana": 2,
+    "orange": 3
+  }
+}
