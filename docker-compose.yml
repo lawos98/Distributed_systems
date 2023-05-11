@@ -1,0 +1,41 @@
+version: "3"
+
+services:
+  ray-head:
+    image: my_ray
+    ports:
+      - "6379:6379"
+      - "8265:8265"
+      - "10001:10001"
+    command: bash -c "ray start --head --dashboard-port=8265 --port=6379 --dashboard-host=0.0.0.0 --redis-password=password --block"
+    shm_size: 2g
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: '2g'
+    networks:
+      - ray_net
+
+  ray-worker:
+    image: my_ray
+    depends_on:
+      - ray-head
+    command: bash -c "ray start --address=ray-head:6379 --redis-password=password --num-cpus=1 --block"
+    shm_size: 2g
+    deploy:
+      mode: replicated
+      replicas: 4
+      resources:
+        limits:
+          cpus: '1'
+          memory: '2g'
+    networks:
+      - ray_net
+
+networks:
+  ray_net:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.63.0.0/16
