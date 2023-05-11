@@ -1,0 +1,62 @@
+syntax = "proto3";
+package subscriptions;
+
+option java_package = "proto";
+option java_outer_classname = "Subscriptions";
+option java_multiple_files = true;
+
+
+enum WeatherType{
+    SUNNY = 0;
+    CLOUDY = 1;
+    RAINY = 2;
+    SNOWY = 3;
+    THUNDER = 4;
+    FOGGY = 5;
+}
+
+message WeatherResponse{
+    string city = 1;
+    WeatherType type = 2;
+    float temperature = 3;
+    float humidity = 4;
+    float wind = 5;
+    float pressure = 6;
+}
+
+message WeatherTemperatureRequest{
+    string city = 1;
+    float temperature = 2;
+    float range = 3;
+}
+
+message WeatherHumidityRequest{
+    string city = 1;
+    float humidity = 2;
+    float range = 3;
+}
+
+message WeatherWindRequest{
+    string city = 1;
+    float wind = 2;
+    float range = 3;
+}
+
+message WeatherPressureRequest{
+    string city = 1;
+    float pressure = 2;
+    float range = 3;
+}
+
+message WeatherTypeRequest{
+    string city = 1;
+    repeated WeatherType type = 2;
+}
+
+service WeatherService{
+    rpc GetWeatherByTemperature(WeatherTemperatureRequest) returns (stream WeatherResponse);
+    rpc GetWeatherByHumidity(WeatherHumidityRequest) returns (stream WeatherResponse);
+    rpc GetWeatherByWind(WeatherWindRequest) returns (stream WeatherResponse);
+    rpc GetWeatherByPressure(WeatherPressureRequest) returns (stream WeatherResponse);
+    rpc GetWeatherByType(WeatherTypeRequest) returns (stream WeatherResponse);
+}
