@@ -13,6 +13,11 @@ AGH WIET course introduces Distributed Systems.
 
 1. [RESTful](https://github.com/lawos98/Distributed_systems/tree/RESTful)
 2. [Sockets](https://github.com/lawos98/Distributed_systems/tree/Sockets)
+3. [Ray](https://github.com/lawos98/Distributed_systems/tree/Ray)
+4. [Subsription Client](https://github.com/lawos98/Distributed_systems/tree/SubsriptionClient)
+5. [Subsription Server](https://github.com/lawos98/Distributed_systems/tree/SubsriptionServer)
+6. [Dynamic Call Client](https://github.com/lawos98/Distributed_systems/tree/DynamicCallClient)
+7. [Dynamic Call Server](https://github.com/lawos98/Distributed_systems/tree/DynamicCallServer)
 
 ## Authors
 
