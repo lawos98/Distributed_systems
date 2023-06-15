@@ -31,6 +31,7 @@ class Carrier(services: List<String>, private val name: String) {
             val queueServiceName = "$service-queue"
             channel.queueDeclare(queueServiceName, false, false, false, null)
             channel.queueBind(queueServiceName, ORDER_EXCHANGE_NAME, service)
+            channel.basicQos(1)
 
             val consumer = object : DefaultConsumer(channel) {
                 override fun handleDelivery(consumerTag: String, envelope: Envelope, properties: AMQP.BasicProperties, body: ByteArray) {

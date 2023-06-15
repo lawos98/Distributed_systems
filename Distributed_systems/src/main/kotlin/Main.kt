@@ -47,7 +47,7 @@ fun main(): Unit = runBlocking {
                 randomAgency.placeOrder(randomOrder, orderId.toString())
             }
 
-            delay(Random.nextLong(100, 1000))
+            delay(Random.nextLong(1000, 5000))
         }
     }
 
