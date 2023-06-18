@@ -1,0 +1,12 @@
+node#root {
+    size: 20px;
+    fill-color: red;
+    stroke-mode: plain;
+    stroke-color: black;
+    stroke-width: 1px;
+    text-alignment: under;
+    text-size: 24px;
+    text-background-mode: rounded-box;
+    text-background-color: #EEE;
+    text-offset: 0px, 5px;
+}
