@@ -1,8 +1,5 @@
-import org.apache.zookeeper.AsyncCallback.StatCallback
-import org.apache.zookeeper.KeeperException
-import org.apache.zookeeper.WatchedEvent
-import org.apache.zookeeper.Watcher
-import org.apache.zookeeper.ZooKeeper
+import kotlinx.coroutines.*
+import org.apache.zookeeper.*
 import org.apache.zookeeper.data.Stat
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -10,140 +7,150 @@ import java.io.PrintWriter
 import org.apache.log4j.Level
 import org.apache.log4j.Logger
 import java.util.*
-class ChildrenWatcher(private val origin: String, private val zNode: String, private val zk: ZooKeeper, private val out: PrintWriter) : Watcher, StatCallback {
 
-    private var children = mutableListOf<String>()
+class DescendantWatcher(
+    private val zNode: String,
+    private val zooKeeper: ZooKeeper,
+    private val output: PrintWriter
+) : Watcher, AsyncCallback.StatCallback {
 
-    private fun updateChildren(zk: ZooKeeper, origin: String, zNode: String, children: MutableList<String>, watcher: Watcher): MutableList<String> =
-        zk.getChildren(zNode, watcher).also {
+    private var descendants: MutableList<String> = mutableListOf()
+
+    private fun updateDescendants(children: List<String>): MutableList<String> =
+        zooKeeper.getChildren(zNode, this).also {
             (it - children).singleOrNull()?.let { newChild ->
                 val newPath = "$zNode/$newChild"
-                zk.exists(newPath, true, ChildrenWatcher(origin, newPath, zk, out), null)
+                zooKeeper.exists(newPath, true, DescendantWatcher(newPath, zooKeeper, output), null)
                 val parentNodeName = zNode.split("/").last()
-                out.println("add $parentNodeName $newChild")
-                out.flush()
+                output.println("add $parentNodeName $newChild")
+                output.flush()
             }
             (children - it).singleOrNull()?.let { removedChild ->
-                out.println("remove $removedChild")
-                out.flush()
+                output.println("remove $removedChild")
+                output.flush()
             }
         }
-
-    override fun process(event: WatchedEvent) {
-        if (event.path == zNode) {
-            zk.exists(zNode, true, this, null)
-        }
-    }
 
     override fun processResult(rc: Int, path: String, ctx: Any?, stat: Stat?) {
         when (KeeperException.Code.get(rc)) {
-            KeeperException.Code.OK -> children = updateChildren(zk, origin, zNode, children, this)
-            else -> zk.exists(zNode, true, this, null)
+            KeeperException.Code.OK -> descendants = updateDescendants(descendants)
+            else -> zooKeeper.exists(zNode, true, this, null)
+        }
+    }
+
+    override fun process(event: WatchedEvent) {
+        if (event.path == zNode && event.type == Watcher.Event.EventType.NodeChildrenChanged) {
+            zooKeeper.exists(zNode, true, this, null)
         }
     }
 }
 
-class ProcessWatcher(hostPort: String, private val zNode: String) : Watcher, StatCallback {
+class ProcessWatcher(private val hostPort: String, private val zNode: String) : Watcher, AsyncCallback.StatCallback {
 
-    private val zk = ZooKeeper(hostPort, 5000, this)
+    private val zooKeeper = ZooKeeper(hostPort, 5000, this)
     private var process: Process? = null
-    private var out: PrintWriter? = null
-    private var childrenWatcher: ChildrenWatcher? = null
+    private var output: PrintWriter? = null
+    private var descendantWatcher: DescendantWatcher? = null
 
-    private fun getDescendants(zNode: String): List<String> {
-        val descendants = mutableListOf<String>()
-        val queue = LinkedList<String>()
+    private fun getAllDescendants(zNode: String): Set<String> {
+        val descendants = mutableSetOf<String>()
+        val queue = ArrayDeque<String>()
 
-        queue.offer(zNode)
+        queue.addLast(zNode)
 
         while (queue.isNotEmpty()) {
-            val node = queue.poll()
+            val node = queue.removeFirst()
             descendants.add(node)
 
-            val children = zk.getChildren(node, false)
-            for (child in children) {
-                val childPath = "$node/$child"
-                queue.offer(childPath)
-            }
+            val children = zooKeeper.getChildren(node, false)
+            queue.addAll(children.map { child -> "$node/$child" })
         }
 
-        return descendants.drop(1)
+        return descendants - zNode
     }
 
-    override fun process(event: WatchedEvent) {
-        if (event.path == zNode) {
-            zk.exists(zNode, true, this, null)
-        }
-    }
-
-    override fun processResult(rc: Int, path: String, ctx: Any?, stat: Stat?) {
-        when (KeeperException.Code.get(rc)) {
-            KeeperException.Code.OK ->  {
-                if(process == null) {
-                    println("Starting GraphApp")
-                    process = Runtime.getRuntime().exec("java -jar GraphGUI.jar")
-                    out = PrintWriter(process!!.outputStream, true)
-                    val reader = BufferedReader(InputStreamReader(process!!.inputStream))
-                    Thread {
-                        var line: String?
-                        while (reader.readLine().also { line = it } != null) {
-                            println(line)
-                        }
-                    }.start()
-
-                    childrenWatcher = ChildrenWatcher(zNode, zNode, zk, out!!)
-                    zk.exists(zNode, true, childrenWatcher, null)
-                }
-            }
-            KeeperException.Code.NONODE -> {
-                if(process != null) {
-                    println("Stopping GraphApp")
-                    process?.destroy()
-                    try {
-                        process!!.waitFor()
-                        process = null
-                        out = null
-                        childrenWatcher = null
-                    } catch (e: InterruptedException) {
-                        e.printStackTrace()
+    override fun processResult(resultCode: Int, path: String, context: Any?, stat: Stat?) {
+        when (KeeperException.Code.get(resultCode)) {
+            KeeperException.Code.OK -> {
+                if (process == null) {
+                    if (path == zNode) {
+                        startGraphApp()
+                    } else {
+                        zooKeeper.exists(zNode, true, this, null)
                     }
                 }
             }
-            KeeperException.Code.SESSIONEXPIRED, KeeperException.Code.NOAUTH -> {
-                return
+            KeeperException.Code.NONODE -> {
+                if (process != null) {
+                    stopGraphApp()
+                }
             }
-            else -> {
-                zk.exists(zNode, true, this, null)
-            }
+            KeeperException.Code.SESSIONEXPIRED, KeeperException.Code.NOAUTH -> return
+            else -> zooKeeper.exists(zNode, true, this, null)
         }
     }
 
+    override fun process(event: WatchedEvent) {
+        if (event.path == zNode && event.type == Watcher.Event.EventType.NodeCreated) {
+            startGraphApp()
+        } else if (event.path == zNode && event.type == Watcher.Event.EventType.NodeDeleted) {
+            stopGraphApp()
+        }
+    }
+
+    private fun startGraphApp() {
+        println("Starting GraphApp")
+        process = Runtime.getRuntime().exec("java -jar GraphGUI.jar")
+        output = PrintWriter(process!!.outputStream, true)
+
+        val reader = BufferedReader(InputStreamReader(process!!.inputStream))
+        GlobalScope.launch(Dispatchers.IO) {
+            while (isActive) {
+                val line = reader.readLine() ?: break
+                println(line)
+            }
+        }
+
+        descendantWatcher = DescendantWatcher(zNode, zooKeeper, output!!)
+        zooKeeper.exists(zNode, true, descendantWatcher, null)
+    }
+
+    private fun stopGraphApp() {
+        println("Stopping GraphApp")
+        process?.destroy()
+        runBlocking {
+            process?.waitFor()
+        }
+        process = null
+        output = null
+        descendantWatcher = null
+    }
     init {
-        zk.exists(zNode, true, this, null)
-        zk.exists(zNode, true, ChildrenWatcher(zNode, zNode, zk, out ?: PrintWriter(System.out)), null)
+        zooKeeper.exists(zNode, true, this, null)
+        zooKeeper.exists(zNode, true, DescendantWatcher(zNode, zooKeeper, output ?: PrintWriter(System.out)), null)
         process?.inputStream?.bufferedReader()?.let { reader ->
             while (reader.ready()) { reader.readLine() }
         }
 
-        zk.exists(zNode, false)?.let {
-            val descendants = getDescendants(zNode)
+        zooKeeper.exists(zNode, false)?.let {
+            val descendants = getAllDescendants(zNode)
             for (descendant in descendants) {
                 val parts = descendant.split("/")
                 val child = parts.last()
                 val parentPath = parts.dropLast(1).joinToString("/")
                 val parent = parentPath.split("/").last()
-                out?.println("add $parent $child")
-                out?.flush()
+                output?.println("add $parent $child")
+                output?.flush()
             }
         }
     }
 }
 
-
-fun main() {
+fun main() = runBlocking {
     Logger.getRootLogger().level = Level.WARN
     ProcessWatcher("127.0.0.1:2181", "/z")
-    while (true){
-        Thread.sleep(100)
+
+    while (isActive) {
+        delay(100)
     }
 }
