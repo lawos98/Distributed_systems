@@ -45,7 +45,7 @@ class DescendantWatcher(
     }
 }
 
-class ProcessWatcher(private val hostPort: String, private val zNode: String) : Watcher, AsyncCallback.StatCallback {
+class ProcessWatcher(hostPort: String, private val zNode: String) : Watcher, AsyncCallback.StatCallback {
 
     private val zooKeeper = ZooKeeper(hostPort, 5000, this)
     private var process: Process? = null
@@ -95,9 +95,11 @@ class ProcessWatcher(private val hostPort: String, private val zNode: String) : 
             startGraphApp()
         } else if (event.path == zNode && event.type == Watcher.Event.EventType.NodeDeleted) {
             stopGraphApp()
+            zooKeeper.exists(zNode, true, this, null)
         }
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     private fun startGraphApp() {
         println("Starting GraphApp")
         process = Runtime.getRuntime().exec("java -jar GraphGUI.jar")
@@ -121,8 +123,8 @@ class ProcessWatcher(private val hostPort: String, private val zNode: String) : 
         runBlocking {
             process?.waitFor()
         }
+        output?.close()
         process = null
-        output = null
         descendantWatcher = null
     }
     init {
@@ -139,6 +141,7 @@ class ProcessWatcher(private val hostPort: String, private val zNode: String) : 
                 val child = parts.last()
                 val parentPath = parts.dropLast(1).joinToString("/")
                 val parent = parentPath.split("/").last()
+                zooKeeper.exists(descendant, true, DescendantWatcher(descendant, zooKeeper, output!!), null)
                 output?.println("add $parent $child")
                 output?.flush()
             }
